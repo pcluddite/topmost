@@ -5,31 +5,31 @@ using System.Windows.Forms;
 
 namespace Topmost
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            timer1.Start();
+            refreshTimer.Start();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             IEnumerable<Window> newWindows = Window.GetAllWindows().Where(wnd => wnd.Visible && wnd.Title != null);
-            IEnumerable<Window> oldWindows = checkedListBox1.Items.Cast<Window>().ToList();
+            IEnumerable<Window> oldWindows = checkedListBox.Items.Cast<Window>().ToList();
 
             foreach (Window wnd in newWindows.Except(oldWindows))
             {
-                checkedListBox1.Items.Add(wnd);
+                checkedListBox.Items.Add(wnd);
             }
 
             foreach (Window wnd in oldWindows.Except(newWindows))
             {
-                checkedListBox1.Items.Remove(wnd);
+                checkedListBox.Items.Remove(wnd);
             }
         }
 
