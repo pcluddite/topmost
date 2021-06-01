@@ -20,20 +20,20 @@ namespace Topmost
         private void refreshTimer_Tick(object sender, EventArgs e)
         {
             IEnumerable<Window> newWindows = Window.GetAllWindows().Where(wnd => wnd.Visible && wnd.Title != null);
-            IEnumerable<Window> oldWindows = checkedListBox.Items.Cast<ListViewItem>().Select(i => (Window)i.Tag).ToArray();
+            IEnumerable<Window> oldWindows = windowListView.Items.Cast<ListViewItem>().Select(i => (Window)i.Tag).ToArray();
 
             foreach (Window wnd in newWindows.Except(oldWindows))
             {
                 if (wnd.Handle != Handle) // don't show this window
-                    checkedListBox.Items.Add(GetListViewItem(wnd));
+                    windowListView.Items.Add(GetListViewItem(wnd));
             }
 
             foreach (Window wnd in oldWindows.Except(newWindows))
             {
-                for (int i = checkedListBox.Items.Count; i >= 0; --i)
+                for (int i = windowListView.Items.Count; i >= 0; --i)
                 {
-                    if (wnd.Equals(checkedListBox.Items[i].Tag))
-                        checkedListBox.Items.RemoveAt(i);
+                    if (wnd.Equals(windowListView.Items[i].Tag))
+                        windowListView.Items.RemoveAt(i);
                 }
             }
         }
