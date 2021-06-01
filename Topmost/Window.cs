@@ -95,7 +95,7 @@ namespace Topmost
                 if (title != null)
                     return title;
             }
-            return "<handle> " + Handle;
+            return "<handle> 0x" + Handle.ToString("X").PadLeft(8, '0');
         }
 
         public override int GetHashCode()

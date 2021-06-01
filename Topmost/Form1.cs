@@ -19,7 +19,7 @@ namespace Topmost
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            IEnumerable<Window> newWindows = Window.GetAllWindows().Where(wnd => wnd.Visible);
+            IEnumerable<Window> newWindows = Window.GetAllWindows().Where(wnd => wnd.Visible && wnd.Title != null);
             IEnumerable<Window> oldWindows = checkedListBox1.Items.Cast<Window>().ToList();
 
             foreach (Window wnd in newWindows.Except(oldWindows))
