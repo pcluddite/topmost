@@ -37,8 +37,8 @@ namespace Topmost
         {
             get
             {
-                WS_EX style = (WS_EX)User32.GetWindowLong(Handle, GWL.STYLE);
-                return (style & WS_EX.TOPMOST) == WS_EX.TOPMOST;
+                WS_EX exstyle = (WS_EX)User32.GetWindowLong(Handle, GWL.EXSTYLE);
+                return (exstyle & WS_EX.TOPMOST) == WS_EX.TOPMOST;
             }
             set
             {

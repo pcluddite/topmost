@@ -3,7 +3,7 @@
 namespace Topmost.Interop
 {
     [Flags]
-    internal enum WS_EX : int
+    internal enum WS_EX : uint
     {
         LEFT                = 0x00000000,
         LTRREADING          = 0x00000000,
