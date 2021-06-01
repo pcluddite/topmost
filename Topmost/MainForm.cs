@@ -17,46 +17,65 @@ namespace Topmost
             refreshTimer.Start();
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void refreshTimer_Tick(object sender, EventArgs e)
         {
             IEnumerable<Window> newWindows = Window.GetAllWindows().Where(wnd => wnd.Visible && wnd.Title != null);
-            IEnumerable<Window> oldWindows = checkedListBox.Items.Cast<Window>().ToList();
+            IEnumerable<Window> oldWindows = checkedListBox.Items.Cast<ListViewItem>().Select(i => (Window)i.Tag).ToArray();
 
             foreach (Window wnd in newWindows.Except(oldWindows))
             {
-                checkedListBox.Items.Add(wnd);
+                if (wnd.Handle != Handle) // don't show this window
+                    checkedListBox.Items.Add(GetListViewItem(wnd));
             }
 
             foreach (Window wnd in oldWindows.Except(newWindows))
             {
-                checkedListBox.Items.Remove(wnd);
+                for (int i = checkedListBox.Items.Count; i >= 0; --i)
+                {
+                    if (wnd.Equals(checkedListBox.Items[i].Tag))
+                        checkedListBox.Items.RemoveAt(i);
+                }
             }
         }
 
-        private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
+        private ListViewItem GetListViewItem(Window wnd)
         {
-            CheckedListBox listBox = (CheckedListBox)sender;
-            ((Window)listBox.Items[e.Index]).Topmost = (e.NewValue == CheckState.Checked);
+            ListViewItem item = new ListViewItem();
+            item.Text = wnd.Title;
+            item.SubItems.Add("0x" + wnd.Handle.ToString("X").PadLeft(8, '0'));
+            item.Tag = wnd;
+            item.Checked = wnd.Topmost;
+            return item;
         }
 
-        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        private void listView_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            this.Show();
+            ListView listBox = (ListView)sender;
+            ((Window)listBox.Items[e.Index].Tag).Topmost = (e.NewValue == CheckState.Checked);
         }
 
-        private void Form1_Resize(object sender, EventArgs e)
+        private void trayIcon_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
         {
             if (WindowState == FormWindowState.Minimized)
-            {
-                this.Hide();
-            }
+                Hide();
         }
 
-        private void Form1_VisibleChanged(object sender, EventArgs e)
+        private void MainForm_VisibleChanged(object sender, EventArgs e)
         {
-            if (this.Visible && WindowState == FormWindowState.Minimized)
+            if (Visible)
             {
-                WindowState = FormWindowState.Normal;
+                if (WindowState == FormWindowState.Minimized)
+                    WindowState = FormWindowState.Normal;
+                refreshTimer.Start();
+            }
+            else
+            {
+                refreshTimer.Stop();
             }
         }
     }
