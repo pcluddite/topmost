@@ -1,64 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
-namespace Topmost {
-    public partial class Form1 : Form {
-
-        WinList winLister;
-        List<string> oldList;
-
-        public Form1() {
-            winLister = new WinList();
-            oldList = new List<string>();
+namespace Topmost
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e) {
+        private void Form1_Load(object sender, EventArgs e)
+        {
             timer1.Start();
         }
 
-        private void timer1_Tick(object sender, EventArgs e) {
-            List<string> newList = winLister.List(2);
-            foreach (string s in newList) {
-                if (!oldList.Contains(s)) {
-                    checkedListBox1.Items.Add(s);
-                }
-            }
-            foreach (string s in oldList) {
-                if (!newList.Contains(s)) {
-                    checkedListBox1.Items.Remove(s);
-                }
-            }
-            oldList = newList;
-        }
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            IEnumerable<Window> newWindows = Window.GetAllWindows().Where(wnd => wnd.Visible);
+            IEnumerable<Window> oldWindows = checkedListBox1.Items.Cast<Window>().ToList();
 
-        private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e) {
-            if (e.NewValue == CheckState.Checked) {
-                winLister.SetTopmost(winLister.WinGetHandle(checkedListBox1.Items[e.Index].ToString()));
+            foreach (Window wnd in newWindows.Except(oldWindows))
+            {
+                checkedListBox1.Items.Add(wnd);
             }
-            else {
-                winLister.RemoveTopmost(winLister.WinGetHandle(checkedListBox1.Items[e.Index].ToString()));
+
+            foreach (Window wnd in oldWindows.Except(newWindows))
+            {
+                checkedListBox1.Items.Remove(wnd);
             }
         }
 
-        private void notifyIcon1_DoubleClick(object sender, EventArgs e) {
+        private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            CheckedListBox listBox = (CheckedListBox)sender;
+            ((Window)listBox.Items[e.Index]).Topmost = (e.NewValue == CheckState.Checked);
+        }
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
             this.Show();
         }
 
-        private void Form1_Resize(object sender, EventArgs e) {
-            if (WindowState == FormWindowState.Minimized) {
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
                 this.Hide();
             }
         }
 
-        private void Form1_VisibleChanged(object sender, EventArgs e) {
-            if (this.Visible && WindowState == FormWindowState.Minimized) {
+        private void Form1_VisibleChanged(object sender, EventArgs e)
+        {
+            if (this.Visible && WindowState == FormWindowState.Minimized)
+            {
                 WindowState = FormWindowState.Normal;
             }
         }
