@@ -67,7 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interop\FORMAT.cs" />
+    <Compile Include="Interop\FORMAT_MESSAGE.cs" />
     <Compile Include="Interop\Kernel32.cs" />
     <Compile Include="Interop\Kernel32Exception.cs" />
     <Compile Include="Interop\LOCALE.cs" />

@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Topmost.Interop;
 
 namespace Topmost.Forms
 {
@@ -42,38 +43,57 @@ namespace Topmost.Forms
 
         private void RefreshList()
         {
-            IEnumerable<Window> currWindows = Window.GetAllWindows().Where(wnd => wnd.Visible && wnd.Title != null && wnd.Handle != Handle);
-            IEnumerable<Window> prevWindows = windowListView.Items.Cast<ListViewItem>().Select(i => (Window)i.Tag).ToArray();
-
-            foreach (Window wnd in currWindows)
+            try
             {
-                ListViewItem item = null;
-                for (int i = windowListView.Items.Count - 1; i >= 0 && item == null; --i)
-                {
-                    if (wnd.Equals(windowListView.Items[i].Tag))
-                        item = windowListView.Items[i];
-                }
-                if (item == null)
-                {
-                    windowListView.Items.Add(GetListViewItem(wnd));
-                }
-                else
-                {
-                    UpdateListViewItem(item);
-                }
-            }
+                IEnumerable<Window> currWindows = Window.GetAllWindows().Where(wnd => wnd.Visible && wnd.Title != null && wnd.Handle != Handle);
+                IEnumerable<Window> prevWindows = windowListView.Items.Cast<ListViewItem>().Select(i => (Window)i.Tag).ToArray();
 
-            foreach (Window wnd in prevWindows.Except(currWindows))
-            {
-                for (int i = windowListView.Items.Count - 1; i >= 0; --i)
+                foreach (Window wnd in currWindows)
                 {
-                    if (wnd.Equals(windowListView.Items[i].Tag))
+                    ListViewItem item = null;
+                    for (int i = windowListView.Items.Count - 1; i >= 0 && item == null; --i)
                     {
-                        windowListView.Items.RemoveAt(i);
-                        break;
+                        if (wnd.Equals(windowListView.Items[i].Tag))
+                            item = windowListView.Items[i];
+                    }
+                    if (item == null)
+                    {
+                        windowListView.Items.Add(GetListViewItem(wnd));
+                    }
+                    else
+                    {
+                        UpdateListViewItem(item);
+                    }
+                }
+
+                foreach (Window wnd in prevWindows.Except(currWindows))
+                {
+                    for (int i = windowListView.Items.Count - 1; i >= 0; --i)
+                    {
+                        if (wnd.Equals(windowListView.Items[i].Tag))
+                        {
+                            windowListView.Items.RemoveAt(i);
+                            break;
+                        }
                     }
                 }
             }
+            catch (NativeException ex)
+            {
+                EndFatally(ex.Message);
+            }
+        }
+
+        private void EndFatally(string msg)
+        {
+            refreshTimer.Stop();
+            windowListView.Enabled = false;
+            ShowError(msg + Environment.NewLine + "Please restart the application.");
+        }
+
+        private void ShowError(string msg)
+        {
+            MessageBox.Show(this, msg, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private ListViewItem GetListViewItem(Window wnd)
@@ -95,8 +115,15 @@ namespace Topmost.Forms
 
         private void listView_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            ListView listBox = (ListView)sender;
-            ((Window)listBox.Items[e.Index].Tag).Topmost = (e.NewValue == CheckState.Checked);
+            try
+            {
+                ListView listBox = (ListView)sender;
+                ((Window)listBox.Items[e.Index].Tag).Topmost = (e.NewValue == CheckState.Checked);
+            }
+            catch (NativeException ex)
+            {
+                EndFatally(ex.Message);
+            }
         }
 
         private void trayIcon_DoubleClick(object sender, EventArgs e)
