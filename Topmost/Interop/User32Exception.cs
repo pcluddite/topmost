@@ -3,30 +3,28 @@ using System.Runtime.InteropServices;
 
 namespace Topmost.Interop
 {
-    internal class User32Exception : Exception
+    internal class User32Exception : NativeException
     {
-        public int LastError { get; private set;  }
+        private const string MODULE = "user32.dll";
 
         public User32Exception()
-            : this(Marshal.GetLastWin32Error())
+            : base()
         {
         }
 
         public User32Exception(int lastError)
-            : base("An error occurred in user32.dll (error code " + lastError + ")")
+            : base(lastError)
         {
         }
 
         public User32Exception(string message)
             : base(message)
         {
-            LastError = Marshal.GetLastWin32Error();
         }
 
         public User32Exception(string message, int lastError)
-            : base(message)
+            : base(message, lastError)
         {
-            LastError = lastError;
         }
     }
 }

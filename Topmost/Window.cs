@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Text;
-using Topmost.Interop;
 using System.Collections.Generic;
+using System.Linq;
+using Topmost.Interop;
 
 namespace Topmost
 {
@@ -9,51 +9,26 @@ namespace Topmost
     {
         public IntPtr Handle { get; private set; }
 
-        protected bool Valid { get { return Handle != IntPtr.Zero; } }
-
         public bool Visible { get { return User32.IsWindowVisible(Handle); } }
 
         public bool Enabled { get { return User32.IsWindowEnabled(Handle); } }
 
-        public bool Maximized { get { return GetPlacement().showCmd == SW.SHOWMAXIMIZED; } }
+        public bool Maximized { get { return User32.IsMaximized(Handle); } }
 
-        public bool Minimized { get { return GetPlacement().showCmd == SW.SHOWMINIMIZED; } }
+        public bool Minimized { get { return User32.IsMinimized(Handle); } }
 
-        public string Title
-        {
-            get
-            {
-                int size = User32.GetWindowTextLength(Handle);
-                if (size == 0)
-                    return null;
-                StringBuilder sb = new StringBuilder(size + 1);
-                if (User32.GetWindowText(Handle, sb, size + 1) > 0)
-                    return sb.ToString();
-                return string.Empty;
-            }
-        }
+        public string Title { get { return User32.GetWindowText(Handle); } }
 
         public bool Topmost
         {
             get
             {
-                WS_EX exstyle = (WS_EX)User32.GetWindowLong(Handle, GWL.EXSTYLE);
-                return (exstyle & WS_EX.TOPMOST) == WS_EX.TOPMOST;
+                return (User32.GetExStyle(Handle) & WS_EX.TOPMOST) == WS_EX.TOPMOST;
             }
             set
             {
-                IntPtr hWndInsertAfter = (IntPtr)(value ? HWND.TOPMOST : HWND.NOTOPMOST);
-                if (!User32.SetWindowPos(Handle, hWndInsertAfter, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOACTIVATE))
-                    throw new InvalidOperationException();
+                User32.SetZOrder(Handle, value ? HWND.TOPMOST : HWND.NOTOPMOST);
             }
-        }
-
-        private WINDOWPLACEMENT GetPlacement()
-        {
-            WINDOWPLACEMENT placement = WINDOWPLACEMENT.Create();
-            if (!User32.GetWindowPlacement(Handle, out placement))
-                throw new InvalidOperationException();
-            return placement;
         }
 
         protected Window(IntPtr hWnd)
@@ -68,26 +43,23 @@ namespace Topmost
 
         public static Window FindWindow(string title, string className)
         {
-            Window w = new Window(User32.FindWindow(className, title));
-            if (w.Valid)
-                return w;
-            return null;
+            IntPtr hWnd = User32.FindWindow(className, title);
+            if (hWnd == (IntPtr)null)
+                throw NativeException.CreateException<User32Exception>("FindWindow");
+            return new Window(hWnd);
         }
 
         public static IEnumerable<Window> GetAllWindows()
         {
-            return new WindowEnum();
+            return User32.EnumWindows().Select(hWnd => new Window(hWnd));
         }
 
         public override string ToString()
         {
-            if (Valid)
-            {
-                string title = Title;
-                if (title != null)
-                    return title;
-            }
-            return "<handle> 0x" + Handle.ToString("X").PadLeft(8, '0');
+            string title = Title;
+            if (title == null) 
+                return "<HWND> 0x" + Handle.ToString("X").PadLeft(8, '0');
+            return title;
         }
 
         public override int GetHashCode()
@@ -110,43 +82,5 @@ namespace Topmost
         }
 
         #endregion
-
-        private class WindowEnum : IEnumerable<Window>
-        {
-            private IList<IntPtr> handles = new List<IntPtr>();
-
-            public WindowEnum()
-            {
-                if (!User32.EnumWindows(AddHandle, 0))
-                    throw new InvalidOperationException();
-            }
-
-            private bool AddHandle(int hWnd, int lParam)
-            {
-                if (hWnd == 0)
-                    return false;
-                handles.Add(new IntPtr(hWnd));
-                return true;
-            }
-
-            #region IEnumerable<Window> Members
-
-            public IEnumerator<Window> GetEnumerator()
-            {
-                foreach (IntPtr hWnd in handles)
-                    yield return new Window(hWnd);
-            }
-
-            #endregion
-
-            #region IEnumerable Members
-
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
-            #endregion
-        }
     }
 }

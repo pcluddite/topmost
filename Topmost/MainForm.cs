@@ -12,7 +12,7 @@ namespace Topmost
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
             refreshTimer.Start();
         }
@@ -30,7 +30,7 @@ namespace Topmost
 
             foreach (Window wnd in oldWindows.Except(newWindows))
             {
-                for (int i = windowListView.Items.Count; i >= 0; --i)
+                for (int i = windowListView.Items.Count - 1; i >= 0; --i)
                 {
                     if (wnd.Equals(windowListView.Items[i].Tag))
                         windowListView.Items.RemoveAt(i);
