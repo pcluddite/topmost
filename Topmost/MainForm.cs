@@ -27,6 +27,7 @@ namespace Topmost
         public MainForm()
         {
             InitializeComponent();
+            Refresh();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -36,30 +37,31 @@ namespace Topmost
 
         private void refreshTimer_Tick(object sender, EventArgs e)
         {
-            IEnumerable<Window> newWindows = Window.GetAllWindows().Where(wnd => wnd.Visible && wnd.Title != null);
-            IEnumerable<Window> oldWindows = windowListView.Items.Cast<ListViewItem>().Select(i => (Window)i.Tag).ToArray();
+            Refresh();
+        }
 
-            foreach (Window wnd in newWindows.Except(oldWindows))
+        public override void Refresh()
+        {
+            base.Refresh();
+            IEnumerable<Window> newWindows = Window.GetAllWindows().Where(wnd => wnd.Visible && wnd.Handle != Handle && wnd.Title != null);
+            ISet<Window> selected = new HashSet<Window>(windowListView.SelectedItems.Cast<ListViewItem>().Select(item => (Window)item.Tag));
+            windowListView.Items.Clear();
+            int zOrder = 0;
+            foreach (Window wnd in newWindows)
             {
-                if (wnd.Handle != Handle) // don't show this window
-                    windowListView.Items.Add(GetListViewItem(wnd));
-            }
-
-            foreach (Window wnd in oldWindows.Except(newWindows))
-            {
-                for (int i = windowListView.Items.Count - 1; i >= 0; --i)
-                {
-                    if (wnd.Equals(windowListView.Items[i].Tag))
-                        windowListView.Items.RemoveAt(i);
-                }
+                ListViewItem item = GetListViewItem(++zOrder, wnd);
+                if (selected.Contains(wnd))
+                    item.Selected = true;
+                windowListView.Items.Add(item);
             }
         }
 
-        private ListViewItem GetListViewItem(Window wnd)
+        private ListViewItem GetListViewItem(int zOrder, Window wnd)
         {
             ListViewItem item = new ListViewItem();
-            item.Text = wnd.Title;
+            item.Text = (wnd.Topmost ? -1 : zOrder).ToString();
             item.SubItems.Add("0x" + wnd.Handle.ToString("X").PadLeft(8, '0'));
+            item.SubItems.Add(wnd.Title);
             item.Tag = wnd;
             item.Checked = wnd.Topmost;
             return item;
