@@ -1,5 +1,24 @@
-﻿namespace Topmost {
-    partial class MainForm {
+﻿//
+//    Topmost
+//    Copyright (C) 2014-2021 Timothy Baxendale
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+namespace Topmost
+{
+    partial class MainForm
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -9,8 +28,10 @@
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing) {
-            if (disposing && (components != null)) {
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -22,7 +43,8 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ColumnHeader colTitle;
             System.Windows.Forms.ColumnHeader colHandle;
@@ -98,4 +120,3 @@
         private System.Windows.Forms.NotifyIcon trayIcon;
     }
 }
-
