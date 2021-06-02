@@ -17,6 +17,7 @@
 //
 using System;
 using System.Windows.Forms;
+using Topmost.Forms;
 
 namespace Topmost
 {

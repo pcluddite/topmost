@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-namespace Topmost
+namespace Topmost.Forms
 {
     partial class MainForm
     {
@@ -49,18 +49,15 @@ namespace Topmost
             System.Windows.Forms.ColumnHeader colTitle;
             System.Windows.Forms.ColumnHeader colHandle;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.ColumnHeader colOrder;
             this.windowListView = new System.Windows.Forms.ListView();
             this.refreshTimer = new System.Windows.Forms.Timer(this.components);
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             colTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             colHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            colOrder = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // colTitle
             // 
-            colTitle.DisplayIndex = 0;
             colTitle.Text = "Title";
             colTitle.Width = 610;
             // 
@@ -76,9 +73,8 @@ namespace Topmost
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.windowListView.CheckBoxes = true;
             this.windowListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            colOrder,
-            colHandle,
-            colTitle});
+            colTitle,
+            colHandle});
             this.windowListView.FullRowSelect = true;
             this.windowListView.Location = new System.Drawing.Point(13, 14);
             this.windowListView.Margin = new System.Windows.Forms.Padding(4);
@@ -100,11 +96,6 @@ namespace Topmost
             this.trayIcon.Text = "Topmost";
             this.trayIcon.Visible = true;
             this.trayIcon.DoubleClick += new System.EventHandler(this.trayIcon_DoubleClick);
-            // 
-            // colOrder
-            // 
-            colOrder.Text = "Z";
-            colOrder.Width = 26;
             // 
             // MainForm
             // 
