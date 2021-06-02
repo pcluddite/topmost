@@ -48,14 +48,6 @@ namespace Topmost
             }
         }
 
-        private RECT GetRectangle()
-        {
-            RECT rect;
-            if (!User32.GetWindowRect(Handle, out rect))
-                throw new InvalidOperationException();
-            return rect;
-        }
-
         private WINDOWPLACEMENT GetPlacement()
         {
             WINDOWPLACEMENT placement = WINDOWPLACEMENT.Create();
