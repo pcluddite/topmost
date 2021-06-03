@@ -92,7 +92,7 @@ namespace Topmost.Forms
             // 
             // trayIcon
             // 
-            this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
+            this.trayIcon.Icon = Properties.Resources.FormIcon;
             this.trayIcon.Text = "Topmost";
             this.trayIcon.Visible = true;
             this.trayIcon.DoubleClick += new System.EventHandler(this.trayIcon_DoubleClick);
@@ -103,7 +103,7 @@ namespace Topmost.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(771, 403);
             this.Controls.Add(this.windowListView);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = Properties.Resources.FormIcon;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
             this.Text = "Topmost";
