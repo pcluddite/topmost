@@ -24,16 +24,23 @@ namespace Topmost.Interop
     internal static class Kernel32
     {
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern int FormatMessage(FORMAT_MESSAGE dwFlags, IntPtr lpSource, int dwMessageId, LOCALE dwLanguageId, out StringBuilder lpBuffer, uint nSize, IntPtr Arguments);
-
+        private static extern int FormatMessage(FORMAT_MESSAGE dwFlags, IntPtr lpSource, uint dwMessageId, LOCALE dwLanguageId, ref IntPtr lpBuffer, uint nSize, IntPtr Arguments);
+        
         public static string FormatMessage(int errorCode)
         {
-            StringBuilder lpBuffer = new StringBuilder(1024);
-            int nSize = FormatMessage(FORMAT_MESSAGE.ALLOCATE_BUFFER | FORMAT_MESSAGE.FROM_SYSTEM | FORMAT_MESSAGE.IGNORE_INSERTS,
-                (IntPtr)null, errorCode, LOCALE.USER_DEFAULT, out lpBuffer, 0, (IntPtr)null);
-            if (nSize == 0)
-                return null;
-            return lpBuffer.ToString().Trim();
+            IntPtr lpBuffer = IntPtr.Zero;
+            try
+            {
+                int nSize = FormatMessage(FORMAT_MESSAGE.ALLOCATE_BUFFER | FORMAT_MESSAGE.FROM_SYSTEM | FORMAT_MESSAGE.IGNORE_INSERTS,
+                    (IntPtr)null, (uint)errorCode, LOCALE.USER_DEFAULT, ref lpBuffer, 0, (IntPtr)null);
+                if (nSize == 0)
+                    return null;
+                return Marshal.PtrToStringAuto(lpBuffer, nSize).Trim();
+            }
+            finally
+            {
+                if (lpBuffer != IntPtr.Zero) Marshal.FreeHGlobal(lpBuffer);
+            }
         }
     }
 }

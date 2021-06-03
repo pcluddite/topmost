@@ -59,7 +59,7 @@ namespace Topmost.Forms
             // colTitle
             // 
             colTitle.Text = "Title";
-            colTitle.Width = 610;
+            colTitle.Width = 438;
             // 
             // colHandle
             // 
