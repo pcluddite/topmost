@@ -68,11 +68,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interop\FORMAT_MESSAGE.cs" />
-    <Compile Include="Interop\Kernel32.cs" />
-    <Compile Include="Interop\Kernel32Exception.cs" />
     <Compile Include="Interop\LOCALE.cs" />
     <Compile Include="Interop\NativeException.cs" />
-    <Compile Include="Interop\User32Exception.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,7 +82,7 @@
     <Compile Include="Interop\RECT.cs" />
     <Compile Include="Interop\SW.cs" />
     <Compile Include="Interop\SWP.cs" />
-    <Compile Include="Interop\User32.cs" />
+    <Compile Include="Interop\Win32.cs" />
     <Compile Include="Interop\WINDOWPLACEMENT.cs" />
     <Compile Include="Interop\WPF.cs" />
     <Compile Include="Interop\WS_EX.cs" />

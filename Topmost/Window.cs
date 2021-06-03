@@ -26,25 +26,25 @@ namespace Topmost
     {
         public IntPtr Handle { get; private set; }
 
-        public bool Visible { get { return User32.IsWindowVisible(Handle); } }
+        public bool Visible { get { return Win32.IsWindowVisible(Handle); } }
 
-        public bool Enabled { get { return User32.IsWindowEnabled(Handle); } }
+        public bool Enabled { get { return Win32.IsWindowEnabled(Handle); } }
 
-        public bool Maximized { get { return User32.IsMaximized(Handle); } }
+        public bool Maximized { get { return Win32.IsMaximized(Handle); } }
 
-        public bool Minimized { get { return User32.IsMinimized(Handle); } }
+        public bool Minimized { get { return Win32.IsMinimized(Handle); } }
 
-        public string Title { get { return User32.GetWindowText(Handle); } }
+        public string Title { get { return Win32.GetWindowText(Handle); } }
 
         public bool Topmost
         {
             get
             {
-                return (User32.GetExStyle(Handle) & WS_EX.TOPMOST) == WS_EX.TOPMOST;
+                return (Win32.GetExStyle(Handle) & WS_EX.TOPMOST) == WS_EX.TOPMOST;
             }
             set
             {
-                User32.SetZOrder(Handle, value ? HWND.TOPMOST : HWND.NOTOPMOST);
+                Win32.SetZOrder(Handle, value ? HWND.TOPMOST : HWND.NOTOPMOST);
             }
         }
 
@@ -60,15 +60,15 @@ namespace Topmost
 
         public static Window FindWindow(string title, string className)
         {
-            IntPtr hWnd = User32.FindWindow(className, title);
+            IntPtr hWnd = Win32.FindWindow(className, title);
             if (hWnd == (IntPtr)null)
-                throw NativeException.CreateException<User32Exception>("FindWindow");
+                throw NativeException.Create(Win32.USER32, "FindWindow");
             return new Window(hWnd);
         }
 
         public static IEnumerable<Window> GetAllWindows()
         {
-            return User32.EnumWindows().Select(hWnd => new Window(hWnd));
+            return Win32.EnumWindows().Select(hWnd => new Window(hWnd));
         }
 
         public override string ToString()
